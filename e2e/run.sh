@@ -27,52 +27,79 @@ get_random_port() {
 PRISM_PORT=$(get_random_port)
 PRISM_URL="http://127.0.0.1:${PRISM_PORT}"
 
-# --- OpenAPI spec for Prism ---
+# --- OpenAPI specs for Prism ---
 PRISM_SPEC="$PROJECT_ROOT/openapi/core-platform-api.json"
 if [ ! -f "$PRISM_SPEC" ]; then
   echo "ERROR: OpenAPI spec not found at $PRISM_SPEC" >&2
   exit 1
 fi
 
+PRISM_COMPUTE_SPEC="$PROJECT_ROOT/openapi/edge-scripting-api.json"
+if [ ! -f "$PRISM_COMPUTE_SPEC" ]; then
+  echo "ERROR: OpenAPI spec not found at $PRISM_COMPUTE_SPEC" >&2
+  exit 1
+fi
+
+# --- Select a second random port for compute API ---
+PRISM_COMPUTE_PORT=$(get_random_port)
+PRISM_COMPUTE_URL="http://127.0.0.1:${PRISM_COMPUTE_PORT}"
+
 # --- Cleanup trap ---
 PRISM_PID=""
+PRISM_COMPUTE_PID=""
 cleanup() {
   if [ -n "$PRISM_PID" ]; then
     kill "$PRISM_PID" 2>/dev/null || true
     wait "$PRISM_PID" 2>/dev/null || true
   fi
+  if [ -n "$PRISM_COMPUTE_PID" ]; then
+    kill "$PRISM_COMPUTE_PID" 2>/dev/null || true
+    wait "$PRISM_COMPUTE_PID" 2>/dev/null || true
+  fi
 }
 trap cleanup EXIT INT TERM
 
-# --- Start Prism mock server ---
-echo "==> Starting Prism mock server on port ${PRISM_PORT}..."
+# --- Start Prism mock servers ---
+echo "==> Starting Prism mock server (platform) on port ${PRISM_PORT}..."
 npx @stoplight/prism-cli mock "$PRISM_SPEC" \
   --port "$PRISM_PORT" \
   --host 127.0.0.1 \
   > /dev/null 2>&1 &
 PRISM_PID=$!
 
-# --- Wait for Prism to be ready ---
-echo "==> Waiting for Prism to be ready..."
-elapsed=0
-timeout=30
-while [ "$elapsed" -lt "$timeout" ]; do
-  if curl -so /dev/null "${PRISM_URL}/" 2>&1; then
-    echo "==> Prism is ready."
-    break
-  fi
-  sleep 1
-  elapsed=$((elapsed + 1))
-done
+echo "==> Starting Prism mock server (compute) on port ${PRISM_COMPUTE_PORT}..."
+npx @stoplight/prism-cli mock "$PRISM_COMPUTE_SPEC" \
+  --port "$PRISM_COMPUTE_PORT" \
+  --host 127.0.0.1 \
+  > /dev/null 2>&1 &
+PRISM_COMPUTE_PID=$!
 
-if [ "$elapsed" -ge "$timeout" ]; then
-  echo "ERROR: Prism did not become ready within ${timeout} seconds." >&2
+# --- Wait for Prism to be ready ---
+wait_for_prism() {
+  local url="$1"
+  local name="$2"
+  local elapsed=0
+  local timeout=30
+  echo "==> Waiting for Prism ($name) to be ready..."
+  while [ "$elapsed" -lt "$timeout" ]; do
+    if curl -so /dev/null "${url}/" 2>&1; then
+      echo "==> Prism ($name) is ready."
+      return 0
+    fi
+    sleep 1
+    elapsed=$((elapsed + 1))
+  done
+  echo "ERROR: Prism ($name) did not become ready within ${timeout} seconds." >&2
   exit 1
-fi
+}
+
+wait_for_prism "$PRISM_URL" "platform"
+wait_for_prism "$PRISM_COMPUTE_URL" "compute"
 
 # --- Run BATS tests ---
 echo "==> Running e2e tests..."
 export PRISM_URL
+export PRISM_COMPUTE_URL
 export BUNNY_BINARY
 
 bats e2e/*.bats

@@ -22,6 +22,7 @@ type App struct {
 	NewDnsZoneAPI      func(cmd *cobra.Command) (DnsZoneAPI, error)
 	NewVideoLibraryAPI func(cmd *cobra.Command) (VideoLibraryAPI, error)
 	NewStreamAPI       func(cmd *cobra.Command) (StreamAPI, error)
+	NewEdgeScriptAPI   func(cmd *cobra.Command) (EdgeScriptAPI, error)
 }
 
 // NewAppContext returns a new context that carries the given App.
@@ -92,6 +93,9 @@ func DefaultApp() *App {
 			return client.NewClient(c)
 		}),
 		NewStreamAPI: newStreamAPIFactory(func(c client.ClientConfig) (StreamAPI, error) {
+			return client.NewClient(c)
+		}),
+		NewEdgeScriptAPI: newAPIFactory(func(c client.ClientConfig) (EdgeScriptAPI, error) {
 			return client.NewClient(c)
 		}),
 	}
