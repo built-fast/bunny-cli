@@ -1,0 +1,39 @@
+# GoReleaser configuration for bunny-cli
+# Docs: https://goreleaser.com
+version: 2
+project_name: bunny-cli
+
+builds:
+  - binary: bunny
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X github.com/built-fast/bunny-cli/cmd.version=v{{ .Version }}
+      - -X github.com/built-fast/bunny-cli/cmd.commit={{ .Commit }}
+      - -X github.com/built-fast/bunny-cli/cmd.date={{ .Date }}
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - formats:
+      - tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - src: man/man1/bunny.1
+        dst: share/man/man1/bunny.1
+
+release:
+  github:
+    owner: built-fast
+    name: bunny-cli
+  draft: false
+  prerelease: auto
+  replace_existing_artifacts: true
+  name_template: "{{.ProjectName}} v{{.Version}}"
