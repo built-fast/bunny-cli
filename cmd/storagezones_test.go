@@ -15,14 +15,14 @@ import (
 
 // mockStorageZoneAPI implements StorageZoneAPI for testing.
 type mockStorageZoneAPI struct {
-	listStorageZonesFn              func(ctx context.Context, page, perPage int, search string, includeDeleted bool) (pagination.PageResponse[*client.StorageZone], error)
-	getStorageZoneFn                func(ctx context.Context, id int64) (*client.StorageZone, error)
-	createStorageZoneFn             func(ctx context.Context, body *client.StorageZoneCreate) (*client.StorageZone, error)
-	updateStorageZoneFn             func(ctx context.Context, id int64, body *client.StorageZoneUpdate) error
-	deleteStorageZoneFn             func(ctx context.Context, id int64, deleteLinkedPullZones bool) error
-	resetStorageZonePasswordFn      func(ctx context.Context, id int64) error
-	resetStorageZoneReadOnlyPassFn  func(ctx context.Context, id int64) error
-	findStorageZoneByNameFn         func(ctx context.Context, name string) (*client.StorageZone, error)
+	listStorageZonesFn             func(ctx context.Context, page, perPage int, search string, includeDeleted bool) (pagination.PageResponse[*client.StorageZone], error)
+	getStorageZoneFn               func(ctx context.Context, id int64) (*client.StorageZone, error)
+	createStorageZoneFn            func(ctx context.Context, body *client.StorageZoneCreate) (*client.StorageZone, error)
+	updateStorageZoneFn            func(ctx context.Context, id int64, body *client.StorageZoneUpdate) error
+	deleteStorageZoneFn            func(ctx context.Context, id int64, deleteLinkedPullZones bool) error
+	resetStorageZonePasswordFn     func(ctx context.Context, id int64) error
+	resetStorageZoneReadOnlyPassFn func(ctx context.Context, id int64) error
+	findStorageZoneByNameFn        func(ctx context.Context, name string) (*client.StorageZone, error)
 }
 
 func (m *mockStorageZoneAPI) ListStorageZones(ctx context.Context, page, perPage int, search string, includeDeleted bool) (pagination.PageResponse[*client.StorageZone], error) {
@@ -63,16 +63,16 @@ func newTestStorageZoneApp(api StorageZoneAPI) *App {
 
 func sampleStorageZone() *client.StorageZone {
 	return &client.StorageZone{
-		Id:              42,
-		Name:            "my-storage",
-		Password:        "secret-password",
-		ReadOnlyPassword: "readonly-password",
-		DateModified:    "2025-01-15T10:30:00Z",
-		StorageUsed:     1024000,
-		FilesStored:     150,
-		Region:          "DE",
-		StorageHostname: "storage.bunnycdn.com",
-		ZoneTier:        0,
+		Id:                 42,
+		Name:               "my-storage",
+		Password:           "secret-password",
+		ReadOnlyPassword:   "readonly-password",
+		DateModified:       "2025-01-15T10:30:00Z",
+		StorageUsed:        1024000,
+		FilesStored:        150,
+		Region:             "DE",
+		StorageHostname:    "storage.bunnycdn.com",
+		ZoneTier:           0,
 		ReplicationRegions: []string{"NY"},
 		PullZones: []client.PullZone{
 			{Id: 1, Name: "cdn-zone"},

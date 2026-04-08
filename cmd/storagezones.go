@@ -258,7 +258,7 @@ func newStorageZonesUpdateCmd() *cobra.Command {
 
 func newStorageZonesDeleteCmd() *cobra.Command {
 	var (
-		yes                  bool
+		yes                   bool
 		deleteLinkedPullZones bool
 	)
 

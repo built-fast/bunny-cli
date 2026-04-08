@@ -94,7 +94,7 @@ func TestListStorageZones_PlainArray(t *testing.T) {
 
 	c := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode([]*StorageZone{
+		_ = json.NewEncoder(w).Encode([]*StorageZone{ //nolint:gosec // G117: test mock, no real secrets
 			{Id: 1, Name: "zone-1"},
 		})
 	}))
@@ -123,7 +123,7 @@ func TestGetStorageZone(t *testing.T) {
 			t.Errorf("expected GET, got %s", r.Method)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(StorageZone{Id: 42, Name: "my-storage", Region: "DE", StorageHostname: "storage.bunnycdn.com"})
+		_ = json.NewEncoder(w).Encode(StorageZone{Id: 42, Name: "my-storage", Region: "DE", StorageHostname: "storage.bunnycdn.com"}) //nolint:gosec // G117: test mock, no real secrets
 	}))
 
 	sz, err := c.GetStorageZone(context.Background(), 42)
@@ -149,7 +149,7 @@ func TestCreateStorageZone(t *testing.T) {
 		_ = json.NewDecoder(r.Body).Decode(&capturedBody)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		_ = json.NewEncoder(w).Encode(StorageZone{Id: 99, Name: capturedBody.Name, Region: capturedBody.Region})
+		_ = json.NewEncoder(w).Encode(StorageZone{Id: 99, Name: capturedBody.Name, Region: capturedBody.Region}) //nolint:gosec // G117: test mock, no real secrets
 	}))
 
 	sz, err := c.CreateStorageZone(context.Background(), &StorageZoneCreate{
