@@ -74,13 +74,16 @@ tidy-check:
 		fi
 
 # ── Test ──────────────────────────────────────────────────────────
-.PHONY: test test-race test-coverage coverage
+.PHONY: test test-race test-coverage coverage test-e2e
 
 test:
 	$(GOTEST) ./...
 
 test-race:
 	$(GOTEST) -race ./...
+
+test-e2e:
+	./e2e/run.sh
 
 test-coverage:
 	$(GOTEST) -coverprofile=coverage.out ./...
@@ -117,6 +120,7 @@ help:
 	@echo "Test:"
 	@echo "  test           Run unit tests"
 	@echo "  test-race      Run unit tests with race detector"
+	@echo "  test-e2e       Run e2e tests (requires Prism)"
 	@echo "  test-coverage  Generate coverage report"
 	@echo "  coverage       Generate and open coverage report"
 	@echo ""

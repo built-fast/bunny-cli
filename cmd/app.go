@@ -2,6 +2,11 @@ package cmd
 
 import (
 	"context"
+
+	"github.com/built-fast/bunny-cli/internal/client"
+	"github.com/built-fast/bunny-cli/internal/output"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // appContextKey is an unexported type used as the key for storing App in a context.
@@ -10,8 +15,7 @@ type appContextKey struct{}
 // App holds all API factory functions, allowing commands to obtain API clients
 // without relying on package-level variables.
 type App struct {
-	// API factory functions will be added as resources are implemented.
-	// e.g. NewPullZoneAPI func(cmd *cobra.Command) (PullZoneAPI, error)
+	NewPullZoneAPI func(cmd *cobra.Command) (PullZoneAPI, error)
 }
 
 // NewAppContext returns a new context that carries the given App.
@@ -28,8 +32,24 @@ func AppFromContext(ctx context.Context) *App {
 	return &App{}
 }
 
+// newAPIFactory returns a factory function that creates an API client using
+// the standard viper/output config pattern.
+func newAPIFactory[T any](fn func(client.ClientConfig) (T, error)) func(cmd *cobra.Command) (T, error) {
+	return func(cmd *cobra.Command) (T, error) {
+		cfg := output.FromContext(cmd.Context())
+		return fn(client.ClientConfig{
+			APIKey: viper.GetString("api_key"),
+			IsJSON: func() bool { return isJSONFormat(cfg.Format) },
+		})
+	}
+}
+
 // DefaultApp returns an App with all factory functions wired to the
 // production implementations (viper config + real bunny.net client).
 func DefaultApp() *App {
-	return &App{}
+	return &App{
+		NewPullZoneAPI: newAPIFactory(func(c client.ClientConfig) (PullZoneAPI, error) {
+			return client.NewClient(c)
+		}),
+	}
 }
