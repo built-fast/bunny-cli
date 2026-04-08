@@ -92,10 +92,23 @@ test-coverage:
 coverage: test-coverage
 	@open coverage.html 2>/dev/null || xdg-open coverage.html 2>/dev/null || true
 
+# ── Surface & Skill Drift ────────────────────────────────────────
+.PHONY: surface check-surface check-skill-drift
+
+surface:
+	$(GOCMD) run ./internal/surface/cmd/gensurface > .surface
+
+check-surface:
+	@$(GOCMD) run ./internal/surface/cmd/gensurface | diff -u .surface - || \
+	  (echo "CLI surface has changed. If intentional, run: make surface" && exit 1)
+
+check-skill-drift:
+	@./scripts/check-skill-drift.sh
+
 # ── CI Gate ───────────────────────────────────────────────────────
 .PHONY: check
 
-check: fmt-check vet lint tidy-check test
+check: fmt-check vet lint tidy-check check-surface check-skill-drift test
 
 # ── Help ──────────────────────────────────────────────────────────
 .PHONY: help
@@ -123,6 +136,11 @@ help:
 	@echo "  test-e2e       Run e2e tests (requires Prism)"
 	@echo "  test-coverage  Generate coverage report"
 	@echo "  coverage       Generate and open coverage report"
+	@echo ""
+	@echo "Surface & Skill Drift:"
+	@echo "  surface        Regenerate .surface snapshot"
+	@echo "  check-surface  Verify .surface is up to date"
+	@echo "  check-skill-drift  Verify SKILL.md matches CLI surface"
 	@echo ""
 	@echo "CI:"
 	@echo "  check          Run full CI gate"

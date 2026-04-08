@@ -33,6 +33,8 @@ func NewRootCmd() *cobra.Command {
 	rootCmd.SilenceErrors = true
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, _ []string) error {
+		RefreshSkillsIfVersionChanged()
+
 		cfg := &output.Config{}
 
 		// Parse --field flag
@@ -109,6 +111,7 @@ func NewRootCmd() *cobra.Command {
 	rootCmd.AddCommand(newStatisticsCmd())
 	rootCmd.AddCommand(newRegionsCmd())
 	rootCmd.AddCommand(newCountriesCmd())
+	rootCmd.AddCommand(newSkillCmd())
 
 	// Store the default App on the root command's context so all subcommands
 	// can retrieve it. This must happen before PersistentPreRunE runs.

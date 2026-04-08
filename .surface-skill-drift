@@ -1,0 +1,3 @@
+# Accepted skill drift — these commands are intentionally not documented in SKILL.md.
+# bunny skill uninstall is a maintenance command, not useful for agents.
+UNDOCUMENTED: bunny skill uninstall

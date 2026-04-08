@@ -1,0 +1,590 @@
+ARG bunny account audit-log <date>
+ARG bunny billing invoice <billing-record-id>
+ARG bunny dns delete <id>
+ARG bunny dns dnssec disable <zone_id>
+ARG bunny dns dnssec enable <zone_id>
+ARG bunny dns export <zone_id>
+ARG bunny dns get <id>
+ARG bunny dns import <zone_id>
+ARG bunny dns records add <zone_id>
+ARG bunny dns records delete <record_id>
+ARG bunny dns records delete <zone_id>
+ARG bunny dns records list <zone_id>
+ARG bunny dns records update <record_id>
+ARG bunny dns records update <zone_id>
+ARG bunny dns update <id>
+ARG bunny pullzones delete <id>
+ARG bunny pullzones edge-rules add <pull_zone_id>
+ARG bunny pullzones edge-rules delete <edge_rule_id>
+ARG bunny pullzones edge-rules delete <pull_zone_id>
+ARG bunny pullzones edge-rules disable <edge_rule_id>
+ARG bunny pullzones edge-rules disable <pull_zone_id>
+ARG bunny pullzones edge-rules enable <edge_rule_id>
+ARG bunny pullzones edge-rules enable <pull_zone_id>
+ARG bunny pullzones edge-rules list <pull_zone_id>
+ARG bunny pullzones get <id>
+ARG bunny pullzones hostnames add <pull_zone_id>
+ARG bunny pullzones hostnames list <pull_zone_id>
+ARG bunny pullzones hostnames remove <pull_zone_id>
+ARG bunny pullzones purge <pull_zone_id>
+ARG bunny pullzones update <id>
+ARG bunny scripts code get <id>
+ARG bunny scripts code set <id>
+ARG bunny scripts delete <id>
+ARG bunny scripts get <id>
+ARG bunny scripts publish <script_id>
+ARG bunny scripts publish [uuid]
+ARG bunny scripts releases active <script_id>
+ARG bunny scripts releases list <script_id>
+ARG bunny scripts rotate-key <id>
+ARG bunny scripts secrets add <script_id>
+ARG bunny scripts secrets delete <script_id>
+ARG bunny scripts secrets delete <secret_id>
+ARG bunny scripts secrets list <script_id>
+ARG bunny scripts secrets update <script_id>
+ARG bunny scripts secrets update <secret_id>
+ARG bunny scripts statistics <id>
+ARG bunny scripts update <id>
+ARG bunny scripts variables add <script_id>
+ARG bunny scripts variables delete <script_id>
+ARG bunny scripts variables delete <variable_id>
+ARG bunny scripts variables get <script_id>
+ARG bunny scripts variables get <variable_id>
+ARG bunny scripts variables list <script_id>
+ARG bunny scripts variables update <script_id>
+ARG bunny scripts variables update <variable_id>
+ARG bunny shield access-lists config update <config_id>
+ARG bunny shield access-lists config update <shield_zone_id>
+ARG bunny shield access-lists create <shield_zone_id>
+ARG bunny shield access-lists delete <id>
+ARG bunny shield access-lists delete <shield_zone_id>
+ARG bunny shield access-lists get <id>
+ARG bunny shield access-lists get <shield_zone_id>
+ARG bunny shield access-lists list <shield_zone_id>
+ARG bunny shield access-lists update <id>
+ARG bunny shield access-lists update <shield_zone_id>
+ARG bunny shield bot-detection get <shield_zone_id>
+ARG bunny shield bot-detection update <shield_zone_id>
+ARG bunny shield event-logs <date>
+ARG bunny shield event-logs <shield_zone_id>
+ARG bunny shield metrics bot-detection <shield_zone_id>
+ARG bunny shield metrics detailed <shield_zone_id>
+ARG bunny shield metrics overview <shield_zone_id>
+ARG bunny shield metrics rate-limits <shield_zone_id>
+ARG bunny shield metrics upload-scanning <shield_zone_id>
+ARG bunny shield metrics waf-rule <rule_id>
+ARG bunny shield metrics waf-rule <shield_zone_id>
+ARG bunny shield rate-limits delete <id>
+ARG bunny shield rate-limits get <id>
+ARG bunny shield rate-limits list <shield_zone_id>
+ARG bunny shield rate-limits update <id>
+ARG bunny shield upload-scanning get <shield_zone_id>
+ARG bunny shield upload-scanning update <shield_zone_id>
+ARG bunny shield waf custom-rules delete <id>
+ARG bunny shield waf custom-rules get <id>
+ARG bunny shield waf custom-rules list <shield_zone_id>
+ARG bunny shield waf custom-rules update <id>
+ARG bunny shield waf rules list <shield_zone_id>
+ARG bunny shield waf triggered list <shield_zone_id>
+ARG bunny shield waf triggered update <shield_zone_id>
+ARG bunny shield zones get <shield_zone_id>
+ARG bunny shield zones get-by-pullzone <pull_zone_id>
+ARG bunny shield zones update <shield_zone_id>
+ARG bunny storage cp <dst>
+ARG bunny storage cp <src>
+ARG bunny storage ls <zone>[/<path>]
+ARG bunny storage rm <zone>/<path>
+ARG bunny storagezones delete <id>
+ARG bunny storagezones get <id>
+ARG bunny storagezones reset-password <id>
+ARG bunny storagezones update <id>
+ARG bunny stream captions add <library_id>
+ARG bunny stream captions add <video_id>
+ARG bunny stream captions delete <library_id>
+ARG bunny stream captions delete <video_id>
+ARG bunny stream collections create <library_id>
+ARG bunny stream collections delete <collection_id>
+ARG bunny stream collections delete <library_id>
+ARG bunny stream collections get <collection_id>
+ARG bunny stream collections get <library_id>
+ARG bunny stream collections list <library_id>
+ARG bunny stream collections update <collection_id>
+ARG bunny stream collections update <library_id>
+ARG bunny stream heatmap <library_id>
+ARG bunny stream heatmap <video_id>
+ARG bunny stream libraries delete <id>
+ARG bunny stream libraries get <id>
+ARG bunny stream libraries reset-api-key <id>
+ARG bunny stream libraries update <id>
+ARG bunny stream statistics <library_id>
+ARG bunny stream videos create <library_id>
+ARG bunny stream videos delete <library_id>
+ARG bunny stream videos delete <video_id>
+ARG bunny stream videos fetch <library_id>
+ARG bunny stream videos get <library_id>
+ARG bunny stream videos get <video_id>
+ARG bunny stream videos list <library_id>
+ARG bunny stream videos reencode <library_id>
+ARG bunny stream videos reencode <video_id>
+ARG bunny stream videos transcribe <library_id>
+ARG bunny stream videos transcribe <video_id>
+ARG bunny stream videos update <library_id>
+ARG bunny stream videos update <video_id>
+ARG bunny stream videos upload <file>
+ARG bunny stream videos upload <library_id>
+CMD bunny
+CMD bunny account
+CMD bunny account api-keys
+CMD bunny account api-keys list
+CMD bunny account audit-log
+CMD bunny billing
+CMD bunny billing details
+CMD bunny billing invoice
+CMD bunny billing records
+CMD bunny billing summary
+CMD bunny configure
+CMD bunny countries
+CMD bunny dns
+CMD bunny dns create
+CMD bunny dns delete
+CMD bunny dns dnssec
+CMD bunny dns dnssec disable
+CMD bunny dns dnssec enable
+CMD bunny dns export
+CMD bunny dns get
+CMD bunny dns import
+CMD bunny dns list
+CMD bunny dns records
+CMD bunny dns records add
+CMD bunny dns records delete
+CMD bunny dns records list
+CMD bunny dns records update
+CMD bunny dns update
+CMD bunny pullzones
+CMD bunny pullzones create
+CMD bunny pullzones delete
+CMD bunny pullzones edge-rules
+CMD bunny pullzones edge-rules add
+CMD bunny pullzones edge-rules delete
+CMD bunny pullzones edge-rules disable
+CMD bunny pullzones edge-rules enable
+CMD bunny pullzones edge-rules list
+CMD bunny pullzones get
+CMD bunny pullzones hostnames
+CMD bunny pullzones hostnames add
+CMD bunny pullzones hostnames list
+CMD bunny pullzones hostnames remove
+CMD bunny pullzones list
+CMD bunny pullzones purge
+CMD bunny pullzones update
+CMD bunny regions
+CMD bunny scripts
+CMD bunny scripts code
+CMD bunny scripts code get
+CMD bunny scripts code set
+CMD bunny scripts create
+CMD bunny scripts delete
+CMD bunny scripts get
+CMD bunny scripts list
+CMD bunny scripts publish
+CMD bunny scripts releases
+CMD bunny scripts releases active
+CMD bunny scripts releases list
+CMD bunny scripts rotate-key
+CMD bunny scripts secrets
+CMD bunny scripts secrets add
+CMD bunny scripts secrets delete
+CMD bunny scripts secrets list
+CMD bunny scripts secrets update
+CMD bunny scripts statistics
+CMD bunny scripts update
+CMD bunny scripts variables
+CMD bunny scripts variables add
+CMD bunny scripts variables delete
+CMD bunny scripts variables get
+CMD bunny scripts variables list
+CMD bunny scripts variables update
+CMD bunny shield
+CMD bunny shield access-lists
+CMD bunny shield access-lists config
+CMD bunny shield access-lists config update
+CMD bunny shield access-lists create
+CMD bunny shield access-lists delete
+CMD bunny shield access-lists get
+CMD bunny shield access-lists list
+CMD bunny shield access-lists update
+CMD bunny shield bot-detection
+CMD bunny shield bot-detection get
+CMD bunny shield bot-detection update
+CMD bunny shield event-logs
+CMD bunny shield metrics
+CMD bunny shield metrics bot-detection
+CMD bunny shield metrics detailed
+CMD bunny shield metrics overview
+CMD bunny shield metrics rate-limits
+CMD bunny shield metrics upload-scanning
+CMD bunny shield metrics waf-rule
+CMD bunny shield rate-limits
+CMD bunny shield rate-limits create
+CMD bunny shield rate-limits delete
+CMD bunny shield rate-limits get
+CMD bunny shield rate-limits list
+CMD bunny shield rate-limits update
+CMD bunny shield upload-scanning
+CMD bunny shield upload-scanning get
+CMD bunny shield upload-scanning update
+CMD bunny shield waf
+CMD bunny shield waf custom-rules
+CMD bunny shield waf custom-rules create
+CMD bunny shield waf custom-rules delete
+CMD bunny shield waf custom-rules get
+CMD bunny shield waf custom-rules list
+CMD bunny shield waf custom-rules update
+CMD bunny shield waf engine
+CMD bunny shield waf profiles
+CMD bunny shield waf rules
+CMD bunny shield waf rules list
+CMD bunny shield waf triggered
+CMD bunny shield waf triggered list
+CMD bunny shield waf triggered update
+CMD bunny shield zones
+CMD bunny shield zones create
+CMD bunny shield zones get
+CMD bunny shield zones get-by-pullzone
+CMD bunny shield zones list
+CMD bunny shield zones update
+CMD bunny skill
+CMD bunny skill install
+CMD bunny skill path
+CMD bunny skill uninstall
+CMD bunny statistics
+CMD bunny storage
+CMD bunny storage cp
+CMD bunny storage ls
+CMD bunny storage rm
+CMD bunny storagezones
+CMD bunny storagezones create
+CMD bunny storagezones delete
+CMD bunny storagezones get
+CMD bunny storagezones list
+CMD bunny storagezones reset-password
+CMD bunny storagezones update
+CMD bunny stream
+CMD bunny stream captions
+CMD bunny stream captions add
+CMD bunny stream captions delete
+CMD bunny stream collections
+CMD bunny stream collections create
+CMD bunny stream collections delete
+CMD bunny stream collections get
+CMD bunny stream collections list
+CMD bunny stream collections update
+CMD bunny stream heatmap
+CMD bunny stream libraries
+CMD bunny stream libraries create
+CMD bunny stream libraries delete
+CMD bunny stream libraries get
+CMD bunny stream libraries languages
+CMD bunny stream libraries list
+CMD bunny stream libraries reset-api-key
+CMD bunny stream libraries update
+CMD bunny stream statistics
+CMD bunny stream videos
+CMD bunny stream videos create
+CMD bunny stream videos delete
+CMD bunny stream videos fetch
+CMD bunny stream videos get
+CMD bunny stream videos list
+CMD bunny stream videos reencode
+CMD bunny stream videos transcribe
+CMD bunny stream videos update
+CMD bunny stream videos upload
+CMD bunny version
+FLAG bunny --api-key string
+FLAG bunny --field string
+FLAG bunny --jq string
+FLAG bunny --output string
+FLAG bunny account api-keys list --all bool
+FLAG bunny account api-keys list --limit int
+FLAG bunny account audit-log --actor-id stringSlice
+FLAG bunny account audit-log --all bool
+FLAG bunny account audit-log --limit int
+FLAG bunny account audit-log --order string
+FLAG bunny account audit-log --product stringSlice
+FLAG bunny account audit-log --resource-id stringSlice
+FLAG bunny account audit-log --resource-type stringSlice
+FLAG bunny billing invoice --output-file string
+FLAG bunny dns create --domain string
+FLAG bunny dns create --from-file string
+FLAG bunny dns create --no-input bool
+FLAG bunny dns delete --yes bool
+FLAG bunny dns dnssec disable --yes bool
+FLAG bunny dns export --output-file string
+FLAG bunny dns get --watch string
+FLAG bunny dns import --file string
+FLAG bunny dns list --all bool
+FLAG bunny dns list --limit int
+FLAG bunny dns list --search string
+FLAG bunny dns records add --comment string
+FLAG bunny dns records add --disabled bool
+FLAG bunny dns records add --from-file string
+FLAG bunny dns records add --name string
+FLAG bunny dns records add --no-input bool
+FLAG bunny dns records add --port int
+FLAG bunny dns records add --priority int
+FLAG bunny dns records add --ttl int
+FLAG bunny dns records add --type string
+FLAG bunny dns records add --value string
+FLAG bunny dns records add --weight int
+FLAG bunny dns records delete --yes bool
+FLAG bunny dns records update --comment string
+FLAG bunny dns records update --disabled bool
+FLAG bunny dns records update --from-file string
+FLAG bunny dns records update --name string
+FLAG bunny dns records update --port int
+FLAG bunny dns records update --priority int
+FLAG bunny dns records update --ttl int
+FLAG bunny dns records update --type string
+FLAG bunny dns records update --value string
+FLAG bunny dns records update --weight int
+FLAG bunny dns update --certificate-key-type int
+FLAG bunny dns update --custom-nameservers-enabled bool
+FLAG bunny dns update --from-file string
+FLAG bunny dns update --log-anonymization-type int
+FLAG bunny dns update --logging-enabled bool
+FLAG bunny dns update --logging-ip-anonymization-enabled bool
+FLAG bunny dns update --nameserver1 string
+FLAG bunny dns update --nameserver2 string
+FLAG bunny dns update --soa-email string
+FLAG bunny pullzones create --from-file string
+FLAG bunny pullzones create --name string
+FLAG bunny pullzones create --no-input bool
+FLAG bunny pullzones create --origin-url string
+FLAG bunny pullzones create --type int
+FLAG bunny pullzones delete --yes bool
+FLAG bunny pullzones edge-rules add --action-parameter1 string
+FLAG bunny pullzones edge-rules add --action-parameter2 string
+FLAG bunny pullzones edge-rules add --action-type int
+FLAG bunny pullzones edge-rules add --description string
+FLAG bunny pullzones edge-rules add --enabled bool
+FLAG bunny pullzones edge-rules add --from-file string
+FLAG bunny pullzones edge-rules add --trigger-matching-type int
+FLAG bunny pullzones edge-rules delete --yes bool
+FLAG bunny pullzones get --watch string
+FLAG bunny pullzones hostnames add --hostname string
+FLAG bunny pullzones hostnames remove --hostname string
+FLAG bunny pullzones hostnames remove --yes bool
+FLAG bunny pullzones list --all bool
+FLAG bunny pullzones list --limit int
+FLAG bunny pullzones list --search string
+FLAG bunny pullzones purge --tag string
+FLAG bunny pullzones purge --yes bool
+FLAG bunny pullzones update --add-host-header bool
+FLAG bunny pullzones update --from-file string
+FLAG bunny pullzones update --origin-host-header string
+FLAG bunny pullzones update --origin-url string
+FLAG bunny pullzones update --verify-origin-ssl bool
+FLAG bunny scripts code get --output-file string
+FLAG bunny scripts code set --file string
+FLAG bunny scripts create --code string
+FLAG bunny scripts create --from-file string
+FLAG bunny scripts create --name string
+FLAG bunny scripts create --no-input bool
+FLAG bunny scripts create --type string
+FLAG bunny scripts delete --delete-linked-pullzones bool
+FLAG bunny scripts delete --yes bool
+FLAG bunny scripts get --watch string
+FLAG bunny scripts list --all bool
+FLAG bunny scripts list --limit int
+FLAG bunny scripts list --search string
+FLAG bunny scripts list --type string
+FLAG bunny scripts publish --note string
+FLAG bunny scripts releases list --all bool
+FLAG bunny scripts releases list --limit int
+FLAG bunny scripts rotate-key --yes bool
+FLAG bunny scripts secrets add --from-file string
+FLAG bunny scripts secrets add --name string
+FLAG bunny scripts secrets add --no-input bool
+FLAG bunny scripts secrets add --secret string
+FLAG bunny scripts secrets delete --yes bool
+FLAG bunny scripts secrets update --from-file string
+FLAG bunny scripts secrets update --secret string
+FLAG bunny scripts statistics --date-from string
+FLAG bunny scripts statistics --date-to string
+FLAG bunny scripts statistics --hourly bool
+FLAG bunny scripts statistics --load-latest bool
+FLAG bunny scripts update --from-file string
+FLAG bunny scripts update --name string
+FLAG bunny scripts update --type string
+FLAG bunny scripts variables add --default-value string
+FLAG bunny scripts variables add --from-file string
+FLAG bunny scripts variables add --name string
+FLAG bunny scripts variables add --no-input bool
+FLAG bunny scripts variables add --required bool
+FLAG bunny scripts variables delete --yes bool
+FLAG bunny scripts variables update --default-value string
+FLAG bunny scripts variables update --from-file string
+FLAG bunny scripts variables update --required bool
+FLAG bunny shield access-lists config update --action int
+FLAG bunny shield access-lists config update --enabled bool
+FLAG bunny shield access-lists create --content string
+FLAG bunny shield access-lists create --description string
+FLAG bunny shield access-lists create --from-file string
+FLAG bunny shield access-lists create --name string
+FLAG bunny shield access-lists create --no-input bool
+FLAG bunny shield access-lists create --type int
+FLAG bunny shield access-lists delete --yes bool
+FLAG bunny shield access-lists get --watch string
+FLAG bunny shield access-lists update --content string
+FLAG bunny shield access-lists update --from-file string
+FLAG bunny shield access-lists update --name string
+FLAG bunny shield bot-detection update --execution-mode int
+FLAG bunny shield bot-detection update --fingerprint-aggression int
+FLAG bunny shield bot-detection update --fingerprint-sensitivity int
+FLAG bunny shield bot-detection update --from-file string
+FLAG bunny shield bot-detection update --ip-sensitivity int
+FLAG bunny shield bot-detection update --request-integrity int
+FLAG bunny shield event-logs --continuation-token string
+FLAG bunny shield metrics detailed --end-date string
+FLAG bunny shield metrics detailed --resolution int
+FLAG bunny shield metrics detailed --start-date string
+FLAG bunny shield rate-limits create --from-file string
+FLAG bunny shield rate-limits create --no-input bool
+FLAG bunny shield rate-limits create --rule-description string
+FLAG bunny shield rate-limits create --rule-name string
+FLAG bunny shield rate-limits create --shield-zone-id int64
+FLAG bunny shield rate-limits delete --yes bool
+FLAG bunny shield rate-limits get --watch string
+FLAG bunny shield rate-limits list --all bool
+FLAG bunny shield rate-limits list --limit int
+FLAG bunny shield rate-limits update --from-file string
+FLAG bunny shield rate-limits update --rule-description string
+FLAG bunny shield rate-limits update --rule-name string
+FLAG bunny shield upload-scanning update --antivirus-scanning-mode int
+FLAG bunny shield upload-scanning update --csam-scanning-mode int
+FLAG bunny shield upload-scanning update --enabled bool
+FLAG bunny shield upload-scanning update --from-file string
+FLAG bunny shield waf custom-rules create --from-file string
+FLAG bunny shield waf custom-rules create --no-input bool
+FLAG bunny shield waf custom-rules create --rule-description string
+FLAG bunny shield waf custom-rules create --rule-name string
+FLAG bunny shield waf custom-rules create --shield-zone-id int64
+FLAG bunny shield waf custom-rules delete --yes bool
+FLAG bunny shield waf custom-rules get --watch string
+FLAG bunny shield waf custom-rules list --all bool
+FLAG bunny shield waf custom-rules list --limit int
+FLAG bunny shield waf custom-rules update --from-file string
+FLAG bunny shield waf custom-rules update --rule-description string
+FLAG bunny shield waf custom-rules update --rule-name string
+FLAG bunny shield waf triggered update --action int
+FLAG bunny shield waf triggered update --rule-id string
+FLAG bunny shield zones create --from-file string
+FLAG bunny shield zones create --no-input bool
+FLAG bunny shield zones create --pull-zone-id int64
+FLAG bunny shield zones get --watch string
+FLAG bunny shield zones list --all bool
+FLAG bunny shield zones list --limit int
+FLAG bunny shield zones update --ddos-challenge-window int
+FLAG bunny shield zones update --ddos-execution-mode int
+FLAG bunny shield zones update --ddos-sensitivity int
+FLAG bunny shield zones update --from-file string
+FLAG bunny shield zones update --learning-mode bool
+FLAG bunny shield zones update --waf-enabled bool
+FLAG bunny shield zones update --waf-execution-mode int
+FLAG bunny shield zones update --waf-profile-id int
+FLAG bunny shield zones update --waf-realtime-threat-intel bool
+FLAG bunny shield zones update --waf-request-header-logging bool
+FLAG bunny shield zones update --whitelabel-response-pages bool
+FLAG bunny statistics --date-from string
+FLAG bunny statistics --date-to string
+FLAG bunny statistics --hourly bool
+FLAG bunny statistics --load-errors bool
+FLAG bunny statistics --pull-zone int64
+FLAG bunny statistics --server-zone-id int64
+FLAG bunny storage --hostname string
+FLAG bunny storage --password string
+FLAG bunny storage cp --checksum bool
+FLAG bunny storage rm --yes bool
+FLAG bunny storagezones create --from-file string
+FLAG bunny storagezones create --name string
+FLAG bunny storagezones create --no-input bool
+FLAG bunny storagezones create --region string
+FLAG bunny storagezones create --replication-regions stringSlice
+FLAG bunny storagezones create --zone-tier int
+FLAG bunny storagezones delete --delete-linked-pull-zones bool
+FLAG bunny storagezones delete --yes bool
+FLAG bunny storagezones get --watch string
+FLAG bunny storagezones list --all bool
+FLAG bunny storagezones list --include-deleted bool
+FLAG bunny storagezones list --limit int
+FLAG bunny storagezones list --search string
+FLAG bunny storagezones reset-password --read-only bool
+FLAG bunny storagezones reset-password --yes bool
+FLAG bunny storagezones update --custom-404-file-path string
+FLAG bunny storagezones update --from-file string
+FLAG bunny storagezones update --origin-url string
+FLAG bunny storagezones update --replication-zones stringSlice
+FLAG bunny storagezones update --rewrite-404-to-200 bool
+FLAG bunny stream captions add --file string
+FLAG bunny stream captions add --label string
+FLAG bunny stream captions add --srclang string
+FLAG bunny stream captions delete --srclang string
+FLAG bunny stream captions delete --yes bool
+FLAG bunny stream collections create --name string
+FLAG bunny stream collections create --no-input bool
+FLAG bunny stream collections delete --yes bool
+FLAG bunny stream collections get --watch string
+FLAG bunny stream collections list --all bool
+FLAG bunny stream collections list --limit int
+FLAG bunny stream collections list --order-by string
+FLAG bunny stream collections list --search string
+FLAG bunny stream collections update --name string
+FLAG bunny stream libraries create --from-file string
+FLAG bunny stream libraries create --name string
+FLAG bunny stream libraries create --no-input bool
+FLAG bunny stream libraries create --replication-regions stringSlice
+FLAG bunny stream libraries delete --yes bool
+FLAG bunny stream libraries get --watch string
+FLAG bunny stream libraries list --all bool
+FLAG bunny stream libraries list --limit int
+FLAG bunny stream libraries list --search string
+FLAG bunny stream libraries reset-api-key --yes bool
+FLAG bunny stream libraries update --allow-direct-play bool
+FLAG bunny stream libraries update --enable-drm bool
+FLAG bunny stream libraries update --enable-mp4-fallback bool
+FLAG bunny stream libraries update --enabled-resolutions string
+FLAG bunny stream libraries update --from-file string
+FLAG bunny stream libraries update --keep-original-files bool
+FLAG bunny stream libraries update --name string
+FLAG bunny stream libraries update --replication-regions stringSlice
+FLAG bunny stream libraries update --webhook-url string
+FLAG bunny stream statistics --date-from string
+FLAG bunny stream statistics --date-to string
+FLAG bunny stream statistics --hourly bool
+FLAG bunny stream statistics --video-guid string
+FLAG bunny stream videos create --collection-id string
+FLAG bunny stream videos create --from-file string
+FLAG bunny stream videos create --no-input bool
+FLAG bunny stream videos create --thumbnail-time int
+FLAG bunny stream videos create --title string
+FLAG bunny stream videos delete --yes bool
+FLAG bunny stream videos fetch --collection-id string
+FLAG bunny stream videos fetch --title string
+FLAG bunny stream videos fetch --url string
+FLAG bunny stream videos get --watch string
+FLAG bunny stream videos list --all bool
+FLAG bunny stream videos list --collection string
+FLAG bunny stream videos list --limit int
+FLAG bunny stream videos list --order-by string
+FLAG bunny stream videos list --search string
+FLAG bunny stream videos transcribe --generate-chapters bool
+FLAG bunny stream videos transcribe --generate-description bool
+FLAG bunny stream videos transcribe --generate-moments bool
+FLAG bunny stream videos transcribe --generate-title bool
+FLAG bunny stream videos transcribe --languages stringSlice
+FLAG bunny stream videos transcribe --source-language string
+FLAG bunny stream videos update --collection-id string
+FLAG bunny stream videos update --from-file string
+FLAG bunny stream videos update --title string
+FLAG bunny stream videos upload --collection-id string
+FLAG bunny stream videos upload --title string
