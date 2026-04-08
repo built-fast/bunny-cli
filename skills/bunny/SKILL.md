@@ -163,6 +163,22 @@ bunny skill path
 
 The skill auto-refreshes when the CLI version changes.
 
+## Shell Completions
+
+```bash
+# Bash — add to ~/.bashrc
+source <(bunny completion bash)
+
+# Zsh — add to ~/.zshrc (before compinit)
+source <(bunny completion zsh)
+
+# Fish
+bunny completion fish | source
+
+# PowerShell
+bunny completion powershell | Out-String | Invoke-Expression
+```
+
 ---
 
 ## Command Reference

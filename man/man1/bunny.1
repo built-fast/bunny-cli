@@ -1,0 +1,669 @@
+.\" bunny.1 - man page for the Bunny CLI
+.TH BUNNY 1 "2026-04-08" "bunny" "Bunny CLI Manual"
+.SH NAME
+bunny \- manage bunny.net resources from the command line
+.SH SYNOPSIS
+.B bunny
+.RI [ command ]
+.RI [ subcommand ]
+.RI [ flags ]
+.SH DESCRIPTION
+.B bunny
+is a command-line interface for the bunny.net CDN platform. It provides
+access to pull zones, storage zones, DNS zones, video streaming, edge
+scripting, and Shield security features through the bunny.net API.
+.PP
+Before using most commands, configure authentication with
+.BR "bunny configure" .
+.SH GLOBAL FLAGS
+These flags apply to all commands:
+.TP
+.BI \-\-api\-key " string"
+bunny.net API key. Overrides config file and
+.B BUNNY_API_KEY
+environment variable.
+.TP
+.BI \-\-output " string"
+Output format:
+.BR table " (default),"
+.BR json ", or"
+.BR json\-pretty .
+.TP
+.BI \-f ", " \-\-field " string"
+Comma-separated list of fields to display in output.
+.TP
+.BI \-\-jq " string"
+Filter JSON output with a jq expression (built-in, no external
+.BR jq (1)
+required).
+.SH COMMANDS
+.SS Configuration
+.TP
+.B bunny configure
+Interactive setup wizard. Prompts for API key.
+Saves to
+.IR ~/.config/bunny/config.toml .
+.SS Pull Zones
+.TP
+.B bunny pullzones list
+List pull zones. Supports
+.BR \-\-search ,
+.BR \-\-limit ,
+and
+.BR \-\-all .
+.TP
+.BI "bunny pullzones get " id
+Show pull zone details. Supports
+.BR \-\-watch .
+.TP
+.B bunny pullzones create
+Create a pull zone with
+.BR \-\-name ,
+.BR \-\-origin\-url ,
+.BR \-\-type ,
+or
+.BR \-\-from\-file .
+.TP
+.BI "bunny pullzones update " id
+Update a pull zone.
+.TP
+.BI "bunny pullzones delete " id
+Delete a pull zone. Requires
+.BR \-\-yes .
+.TP
+.BI "bunny pullzones hostnames list " pull_zone_id
+List hostnames for a pull zone.
+.TP
+.BI "bunny pullzones hostnames add " pull_zone_id
+Add a hostname with
+.BR \-\-hostname .
+.TP
+.BI "bunny pullzones hostnames remove " pull_zone_id
+Remove a hostname.
+.TP
+.BI "bunny pullzones purge " pull_zone_id
+Purge the cache. Optionally filter by
+.BR \-\-tag .
+.TP
+.BI "bunny pullzones edge\-rules list " pull_zone_id
+List edge rules.
+.TP
+.BI "bunny pullzones edge\-rules add " pull_zone_id
+Add or update an edge rule.
+.TP
+.BI "bunny pullzones edge\-rules delete " "pull_zone_id edge_rule_id"
+Delete an edge rule.
+.TP
+.BI "bunny pullzones edge\-rules enable " "pull_zone_id edge_rule_id"
+Enable an edge rule.
+.TP
+.BI "bunny pullzones edge\-rules disable " "pull_zone_id edge_rule_id"
+Disable an edge rule.
+.SS Storage Zones
+.TP
+.B bunny storagezones list
+List storage zones. Supports
+.BR \-\-search ,
+.BR \-\-limit ,
+.BR \-\-all ,
+and
+.BR \-\-include\-deleted .
+.TP
+.BI "bunny storagezones get " id
+Show storage zone details.
+.TP
+.B bunny storagezones create
+Create a storage zone with
+.BR \-\-name ,
+.BR \-\-region ,
+.BR \-\-replication\-regions ,
+.BR \-\-zone\-tier .
+.TP
+.BI "bunny storagezones update " id
+Update a storage zone.
+.TP
+.BI "bunny storagezones delete " id
+Delete a storage zone.
+.TP
+.BI "bunny storagezones reset\-password " id
+Reset the storage zone password.
+.SS Edge Storage
+.TP
+.BI "bunny storage ls " zone/path
+List files in a storage zone directory.
+.TP
+.BI "bunny storage cp " "src dst"
+Copy files to or from Edge Storage. If
+.I src
+is a local file, uploads it; otherwise downloads.
+.TP
+.BI "bunny storage rm " zone/path
+Delete a file from Edge Storage.
+.PP
+Edge Storage commands use per-zone passwords. Override with
+.B \-\-hostname
+and
+.BR \-\-password .
+.SS DNS Zones
+.TP
+.B bunny dns list
+List DNS zones. Supports
+.BR \-\-search ,
+.BR \-\-limit ,
+and
+.BR \-\-all .
+.TP
+.BI "bunny dns get " id
+Show DNS zone details.
+.TP
+.B bunny dns create
+Create a DNS zone with
+.BR \-\-domain .
+.TP
+.BI "bunny dns update " id
+Update DNS zone settings.
+.TP
+.BI "bunny dns delete " id
+Delete a DNS zone.
+.TP
+.BI "bunny dns import " zone_id
+Import DNS records from a zone file with
+.BR \-\-file .
+.TP
+.BI "bunny dns export " zone_id
+Export DNS zone to zone file format.
+.TP
+.BI "bunny dns records list " zone_id
+List DNS records in a zone.
+.TP
+.BI "bunny dns records add " zone_id
+Add a DNS record with
+.BR \-\-type ,
+.BR \-\-name ,
+.BR \-\-value .
+.TP
+.BI "bunny dns records update " "zone_id record_id"
+Update a DNS record.
+.TP
+.BI "bunny dns records delete " "zone_id record_id"
+Delete a DNS record.
+.TP
+.BI "bunny dns dnssec enable " zone_id
+Enable DNSSEC for a zone.
+.TP
+.BI "bunny dns dnssec disable " zone_id
+Disable DNSSEC for a zone.
+.SS Stream (Video)
+.TP
+.B bunny stream libraries list
+List video libraries.
+.TP
+.BI "bunny stream libraries get " id
+Show video library details.
+.TP
+.B bunny stream libraries create
+Create a video library.
+.TP
+.BI "bunny stream libraries update " id
+Update a video library.
+.TP
+.BI "bunny stream libraries delete " id
+Delete a video library.
+.TP
+.BI "bunny stream libraries reset\-api\-key " id
+Reset the API key for a video library.
+.TP
+.B bunny stream libraries languages
+List available languages.
+.TP
+.BI "bunny stream videos list " library_id
+List videos in a library.
+.TP
+.BI "bunny stream videos get " "library_id video_id"
+Show video details.
+.TP
+.BI "bunny stream videos create " library_id
+Create a video record.
+.TP
+.BI "bunny stream videos update " "library_id video_id"
+Update a video.
+.TP
+.BI "bunny stream videos delete " "library_id video_id"
+Delete a video.
+.TP
+.BI "bunny stream videos upload " "library_id file"
+Upload a video file.
+.TP
+.BI "bunny stream videos fetch " library_id
+Fetch a video from a URL with
+.BR \-\-url .
+.TP
+.BI "bunny stream videos reencode " "library_id video_id"
+Reencode a video.
+.TP
+.BI "bunny stream videos transcribe " "library_id video_id"
+Transcribe a video.
+.TP
+.BI "bunny stream collections list " library_id
+List collections.
+.TP
+.BI "bunny stream collections get " "library_id collection_id"
+Show collection details.
+.TP
+.BI "bunny stream collections create " library_id
+Create a collection.
+.TP
+.BI "bunny stream collections update " "library_id collection_id"
+Update a collection.
+.TP
+.BI "bunny stream collections delete " "library_id collection_id"
+Delete a collection.
+.TP
+.BI "bunny stream captions add " "library_id video_id"
+Add a caption track.
+.TP
+.BI "bunny stream captions delete " "library_id video_id"
+Delete a caption track.
+.TP
+.BI "bunny stream statistics " library_id
+Get video library statistics.
+.TP
+.BI "bunny stream heatmap " "library_id video_id"
+Get video heatmap data.
+.SS Edge Scripts
+.TP
+.B bunny scripts list
+List edge scripts.
+.TP
+.BI "bunny scripts get " id
+Show edge script details.
+.TP
+.B bunny scripts create
+Create an edge script.
+.TP
+.BI "bunny scripts update " id
+Update an edge script.
+.TP
+.BI "bunny scripts delete " id
+Delete an edge script.
+.TP
+.BI "bunny scripts code get " id
+Download script code.
+.TP
+.BI "bunny scripts code set " id
+Upload script code from
+.BR \-\-file .
+.TP
+.BI "bunny scripts publish " script_id
+Publish a new release.
+.TP
+.BI "bunny scripts releases list " script_id
+List releases.
+.TP
+.BI "bunny scripts releases active " script_id
+Show the active release.
+.TP
+.BI "bunny scripts statistics " id
+Get script statistics.
+.TP
+.BI "bunny scripts rotate\-key " id
+Rotate the deployment key.
+.TP
+.BI "bunny scripts variables list " script_id
+List variables.
+.TP
+.BI "bunny scripts variables get " "script_id variable_id"
+Get a variable.
+.TP
+.BI "bunny scripts variables add " script_id
+Add a variable.
+.TP
+.BI "bunny scripts variables update " "script_id variable_id"
+Update a variable.
+.TP
+.BI "bunny scripts variables delete " "script_id variable_id"
+Delete a variable.
+.TP
+.BI "bunny scripts secrets list " script_id
+List secrets.
+.TP
+.BI "bunny scripts secrets add " script_id
+Add a secret.
+.TP
+.BI "bunny scripts secrets update " "script_id secret_id"
+Update a secret.
+.TP
+.BI "bunny scripts secrets delete " "script_id secret_id"
+Delete a secret.
+.SS Shield (Security)
+.TP
+.B bunny shield zones list
+List Shield zones.
+.TP
+.BI "bunny shield zones get " shield_zone_id
+Show Shield zone details.
+.TP
+.B bunny shield zones create
+Create a Shield zone for a pull zone.
+.TP
+.BI "bunny shield zones update " shield_zone_id
+Update Shield zone settings (WAF, DDoS, learning mode).
+.TP
+.BI "bunny shield zones get\-by\-pullzone " pull_zone_id
+Get Shield zone by pull zone ID.
+.TP
+.BI "bunny shield waf rules list " shield_zone_id
+List WAF rules.
+.TP
+.BI "bunny shield waf custom\-rules list " shield_zone_id
+List custom WAF rules.
+.TP
+.BI "bunny shield waf custom\-rules get " id
+Get custom WAF rule details.
+.TP
+.BI "bunny shield waf custom\-rules create"
+Create a custom WAF rule.
+.TP
+.BI "bunny shield waf custom\-rules update " id
+Update a custom WAF rule.
+.TP
+.BI "bunny shield waf custom\-rules delete " id
+Delete a custom WAF rule.
+.TP
+.BI "bunny shield waf triggered list " shield_zone_id
+List triggered WAF rules.
+.TP
+.BI "bunny shield waf triggered update " shield_zone_id
+Update a triggered WAF rule action.
+.TP
+.BI "bunny shield rate\-limits list " shield_zone_id
+List rate limit rules.
+.TP
+.BI "bunny shield rate\-limits get " id
+Get rate limit rule details.
+.TP
+.B bunny shield rate\-limits create
+Create a rate limit rule.
+.TP
+.BI "bunny shield rate\-limits update " id
+Update a rate limit rule.
+.TP
+.BI "bunny shield rate\-limits delete " id
+Delete a rate limit rule.
+.TP
+.BI "bunny shield access\-lists list " shield_zone_id
+List access lists.
+.TP
+.BI "bunny shield access\-lists get " "shield_zone_id id"
+Get access list details.
+.TP
+.BI "bunny shield access\-lists create " shield_zone_id
+Create an access list.
+.TP
+.BI "bunny shield access\-lists update " "shield_zone_id id"
+Update an access list.
+.TP
+.BI "bunny shield access\-lists delete " "shield_zone_id id"
+Delete an access list.
+.TP
+.BI "bunny shield access\-lists config update " "shield_zone_id config_id"
+Update access list configuration.
+.TP
+.BI "bunny shield bot\-detection get " shield_zone_id
+Get bot detection configuration.
+.TP
+.BI "bunny shield bot\-detection update " shield_zone_id
+Update bot detection configuration.
+.TP
+.BI "bunny shield upload\-scanning get " shield_zone_id
+Get upload scanning configuration.
+.TP
+.BI "bunny shield upload\-scanning update " shield_zone_id
+Update upload scanning configuration.
+.TP
+.BI "bunny shield event\-logs " "shield_zone_id date"
+Get Shield event logs for a date (YYYY-MM-DD).
+.TP
+.BI "bunny shield metrics overview " shield_zone_id
+Get Shield metrics overview.
+.TP
+.BI "bunny shield metrics detailed " shield_zone_id
+Get detailed Shield metrics.
+.TP
+.BI "bunny shield metrics rate\-limits " shield_zone_id
+Get rate limit metrics.
+.TP
+.BI "bunny shield metrics waf\-rule " "shield_zone_id rule_id"
+Get metrics for a specific WAF rule.
+.TP
+.BI "bunny shield metrics bot\-detection " shield_zone_id
+Get bot detection metrics.
+.TP
+.BI "bunny shield metrics upload\-scanning " shield_zone_id
+Get upload scanning metrics.
+.SS Account
+.TP
+.B bunny account api\-keys list
+List API keys.
+.TP
+.BI "bunny account audit\-log " date
+Get audit log entries for a date (YYYY-MM-DD).
+.SS Billing
+.TP
+.B bunny billing summary
+Get per-pullzone billing summary.
+.TP
+.B bunny billing details
+Get billing details and monthly charges.
+.TP
+.B bunny billing records
+List billing records/transactions.
+.TP
+.BI "bunny billing invoice " billing_record_id
+Download a billing invoice PDF.
+.SS Statistics
+.TP
+.B bunny statistics
+Get global CDN statistics. Supports
+.BR \-\-date\-from ,
+.BR \-\-date\-to ,
+.BR \-\-hourly ,
+.BR \-\-pull\-zone .
+.SS Utilities
+.TP
+.B bunny regions
+List available CDN regions.
+.TP
+.B bunny countries
+List countries.
+.SS Shell Completion
+.TP
+.B bunny completion bash
+Generate Bash completion script.
+.TP
+.B bunny completion zsh
+Generate Zsh completion script.
+.TP
+.B bunny completion fish
+Generate Fish completion script.
+.TP
+.B bunny completion powershell
+Generate PowerShell completion script.
+.SS Skill (AI Agent)
+.TP
+.B bunny skill
+Print the embedded AI skill reference document.
+.TP
+.B bunny skill install
+Install the skill to the Claude Code skills directory.
+.TP
+.B bunny skill uninstall
+Remove the installed skill.
+.TP
+.B bunny skill path
+Print the skill installation path.
+.SS Version
+.TP
+.B bunny version
+Print the version of bunny-cli.
+.SH COMMON FLAGS
+Many commands share the following flags:
+.SS List Commands
+.TP
+.BI \-\-limit " int"
+Maximum number of results to return (default 20).
+.TP
+.B \-\-all
+Fetch all pages of results.
+.TP
+.BI \-\-search " string"
+Filter results by search term.
+.SS Get Commands
+.TP
+.BI \-\-watch " duration"
+Poll for updates on an interval (e.g.,
+.BR 5s ,
+.BR 1m ).
+.SS Destructive Commands
+.TP
+.B \-\-yes
+Skip interactive confirmation prompt.
+.SS Create/Update Commands
+.TP
+.BI \-\-from\-file " path"
+Load request body from a JSON file. CLI flags override file values.
+.TP
+.B \-\-no\-input
+Skip interactive prompts when fields are missing.
+.SH CONFIGURATION
+Configuration is stored in
+.IR ~/.config/bunny/config.toml .
+Run
+.B bunny configure
+to set it up interactively.
+.PP
+Example config file:
+.PP
+.RS
+.nf
+api_key = "your-api-key"
+.fi
+.RE
+.PP
+Configuration precedence (highest to lowest):
+.IP 1. 4
+Command-line flags
+.IP 2. 4
+Environment variables
+.IP 3. 4
+Config file
+.SH ENVIRONMENT
+.TP
+.B BUNNY_API_KEY
+bunny.net API key.
+.SH EXAMPLES
+Configure the CLI:
+.PP
+.RS
+.nf
+$ bunny configure
+.fi
+.RE
+.PP
+List pull zones as JSON:
+.PP
+.RS
+.nf
+$ bunny pullzones list \-\-output json
+.fi
+.RE
+.PP
+Get a pull zone showing only name and origin URL:
+.PP
+.RS
+.nf
+$ bunny pullzones get 12345 \-f Name,OriginUrl
+.fi
+.RE
+.PP
+Create a pull zone from a JSON file:
+.PP
+.RS
+.nf
+$ bunny pullzones create \-\-from\-file pullzone.json
+.fi
+.RE
+.PP
+Purge cache for a pull zone:
+.PP
+.RS
+.nf
+$ bunny pullzones purge 12345 \-\-yes
+.fi
+.RE
+.PP
+Upload a file to Edge Storage:
+.PP
+.RS
+.nf
+$ bunny storage cp ./index.html my\-zone/www/index.html
+.fi
+.RE
+.PP
+Use jq to extract pull zone names:
+.PP
+.RS
+.nf
+$ bunny pullzones list \-\-jq '.[].Name'
+.fi
+.RE
+.PP
+Deploy an edge script:
+.PP
+.RS
+.nf
+$ bunny scripts code set 789 \-\-file worker.js
+$ bunny scripts publish 789 \-\-note "v2.0 release"
+.fi
+.RE
+.PP
+Watch a pull zone for changes:
+.PP
+.RS
+.nf
+$ bunny pullzones get 12345 \-\-watch 10s
+.fi
+.RE
+.PP
+Generate Zsh completions:
+.PP
+.RS
+.nf
+$ bunny completion zsh > "${fpath[1]}/_bunny"
+.fi
+.RE
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+General error (API error, invalid input, network failure).
+.SH FILES
+.TP
+.I ~/.config/bunny/config.toml
+CLI configuration file (dir 0700, file 0600).
+.SH NOTES
+This is an unofficial, community-maintained CLI client and is not supported by
+or affiliated with bunny.net.
+.PP
+Report bugs and feature requests at
+.UR https://github.com/built-fast/bunny-cli/issues
+GitHub
+.UE .
+.SH SEE ALSO
+.UR https://docs.bunny.net/reference/bunnynet-api-overview
+bunny.net API Documentation
+.UE
+.SH AUTHORS
+BuiltFast.com

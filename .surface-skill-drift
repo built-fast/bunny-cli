@@ -1,3 +1,9 @@
 # Accepted skill drift — these commands are intentionally not documented in SKILL.md.
 # bunny skill uninstall is a maintenance command, not useful for agents.
 UNDOCUMENTED: bunny skill uninstall
+# Completion commands are excluded from .surface by design (surface.go skips them).
+# They are documented in SKILL.md for agent discoverability.
+CMD: bunny completion bash
+CMD: bunny completion fish
+CMD: bunny completion powershell
+CMD: bunny completion zsh
