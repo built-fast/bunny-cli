@@ -15,7 +15,9 @@ type appContextKey struct{}
 // App holds all API factory functions, allowing commands to obtain API clients
 // without relying on package-level variables.
 type App struct {
-	NewPullZoneAPI func(cmd *cobra.Command) (PullZoneAPI, error)
+	NewPullZoneAPI    func(cmd *cobra.Command) (PullZoneAPI, error)
+	NewStorageZoneAPI func(cmd *cobra.Command) (StorageZoneAPI, error)
+	NewStorageAPI     func(cmd *cobra.Command, password, hostname string) (StorageAPI, error)
 }
 
 // NewAppContext returns a new context that carries the given App.
@@ -51,5 +53,16 @@ func DefaultApp() *App {
 		NewPullZoneAPI: newAPIFactory(func(c client.ClientConfig) (PullZoneAPI, error) {
 			return client.NewClient(c)
 		}),
+		NewStorageZoneAPI: newAPIFactory(func(c client.ClientConfig) (StorageZoneAPI, error) {
+			return client.NewClient(c)
+		}),
+		NewStorageAPI: func(cmd *cobra.Command, password, hostname string) (StorageAPI, error) {
+			cfg := output.FromContext(cmd.Context())
+			return client.NewStorageClient(client.StorageClientConfig{
+				Password: password,
+				Hostname: hostname,
+				IsJSON:   func() bool { return isJSONFormat(cfg.Format) },
+			})
+		},
 	}
 }
