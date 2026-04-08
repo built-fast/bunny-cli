@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"os"
 
 	"github.com/built-fast/bunny-cli/internal/client"
 	"github.com/built-fast/bunny-cli/internal/output"
@@ -15,10 +16,12 @@ type appContextKey struct{}
 // App holds all API factory functions, allowing commands to obtain API clients
 // without relying on package-level variables.
 type App struct {
-	NewPullZoneAPI    func(cmd *cobra.Command) (PullZoneAPI, error)
-	NewStorageZoneAPI func(cmd *cobra.Command) (StorageZoneAPI, error)
-	NewStorageAPI     func(cmd *cobra.Command, password, hostname string) (StorageAPI, error)
-	NewDnsZoneAPI     func(cmd *cobra.Command) (DnsZoneAPI, error)
+	NewPullZoneAPI     func(cmd *cobra.Command) (PullZoneAPI, error)
+	NewStorageZoneAPI  func(cmd *cobra.Command) (StorageZoneAPI, error)
+	NewStorageAPI      func(cmd *cobra.Command, password, hostname string) (StorageAPI, error)
+	NewDnsZoneAPI      func(cmd *cobra.Command) (DnsZoneAPI, error)
+	NewVideoLibraryAPI func(cmd *cobra.Command) (VideoLibraryAPI, error)
+	NewStreamAPI       func(cmd *cobra.Command) (StreamAPI, error)
 }
 
 // NewAppContext returns a new context that carries the given App.
@@ -47,6 +50,23 @@ func newAPIFactory[T any](fn func(client.ClientConfig) (T, error)) func(cmd *cob
 	}
 }
 
+// newStreamAPIFactory returns a factory function that creates an API client
+// pointed at the Stream API (video.bunnycdn.com) instead of the platform API.
+func newStreamAPIFactory[T any](fn func(client.ClientConfig) (T, error)) func(cmd *cobra.Command) (T, error) {
+	return func(cmd *cobra.Command) (T, error) {
+		cfg := output.FromContext(cmd.Context())
+		baseURL := client.BaseURLStream
+		if envURL := os.Getenv("BUNNY_STREAM_URL"); envURL != "" {
+			baseURL = envURL
+		}
+		return fn(client.ClientConfig{
+			APIKey:  viper.GetString("api_key"),
+			BaseURL: baseURL,
+			IsJSON:  func() bool { return isJSONFormat(cfg.Format) },
+		})
+	}
+}
+
 // DefaultApp returns an App with all factory functions wired to the
 // production implementations (viper config + real bunny.net client).
 func DefaultApp() *App {
@@ -66,6 +86,12 @@ func DefaultApp() *App {
 			})
 		},
 		NewDnsZoneAPI: newAPIFactory(func(c client.ClientConfig) (DnsZoneAPI, error) {
+			return client.NewClient(c)
+		}),
+		NewVideoLibraryAPI: newAPIFactory(func(c client.ClientConfig) (VideoLibraryAPI, error) {
+			return client.NewClient(c)
+		}),
+		NewStreamAPI: newStreamAPIFactory(func(c client.ClientConfig) (StreamAPI, error) {
 			return client.NewClient(c)
 		}),
 	}
