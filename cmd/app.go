@@ -24,6 +24,11 @@ type App struct {
 	NewStreamAPI       func(cmd *cobra.Command) (StreamAPI, error)
 	NewEdgeScriptAPI   func(cmd *cobra.Command) (EdgeScriptAPI, error)
 	NewShieldAPI       func(cmd *cobra.Command) (ShieldAPI, error)
+	NewAccountAPI      func(cmd *cobra.Command) (AccountAPI, error)
+	NewBillingAPI      func(cmd *cobra.Command) (BillingAPI, error)
+	NewStatisticsAPI   func(cmd *cobra.Command) (StatisticsAPI, error)
+	NewRegionAPI       func(cmd *cobra.Command) (RegionAPI, error)
+	NewCountryAPI      func(cmd *cobra.Command) (CountryAPI, error)
 }
 
 // NewAppContext returns a new context that carries the given App.
@@ -100,6 +105,21 @@ func DefaultApp() *App {
 			return client.NewClient(c)
 		}),
 		NewShieldAPI: newAPIFactory(func(c client.ClientConfig) (ShieldAPI, error) {
+			return client.NewClient(c)
+		}),
+		NewAccountAPI: newAPIFactory(func(c client.ClientConfig) (AccountAPI, error) {
+			return client.NewClient(c)
+		}),
+		NewBillingAPI: newAPIFactory(func(c client.ClientConfig) (BillingAPI, error) {
+			return client.NewClient(c)
+		}),
+		NewStatisticsAPI: newAPIFactory(func(c client.ClientConfig) (StatisticsAPI, error) {
+			return client.NewClient(c)
+		}),
+		NewRegionAPI: newAPIFactory(func(c client.ClientConfig) (RegionAPI, error) {
+			return client.NewClient(c)
+		}),
+		NewCountryAPI: newAPIFactory(func(c client.ClientConfig) (CountryAPI, error) {
 			return client.NewClient(c)
 		}),
 	}

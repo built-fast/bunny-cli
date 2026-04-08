@@ -104,6 +104,11 @@ func NewRootCmd() *cobra.Command {
 	rootCmd.AddCommand(newStreamCmd())
 	rootCmd.AddCommand(newScriptsCmd())
 	rootCmd.AddCommand(newShieldCmd())
+	rootCmd.AddCommand(newAccountCmd())
+	rootCmd.AddCommand(newBillingCmd())
+	rootCmd.AddCommand(newStatisticsCmd())
+	rootCmd.AddCommand(newRegionsCmd())
+	rootCmd.AddCommand(newCountriesCmd())
 
 	// Store the default App on the root command's context so all subcommands
 	// can retrieve it. This must happen before PersistentPreRunE runs.

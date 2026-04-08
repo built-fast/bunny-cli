@@ -171,7 +171,7 @@ type CustomWafRule struct {
 // WafRuleConfig holds the configuration for a custom WAF rule.
 type WafRuleConfig struct {
 	ActionType            int                       `json:"actionType"`
-	VariableTypes         map[string]string          `json:"variableTypes"`
+	VariableTypes         map[string]string         `json:"variableTypes"`
 	OperatorType          int                       `json:"operatorType"`
 	SeverityType          int                       `json:"severityType"`
 	TransformationTypes   []int                     `json:"transformationTypes"`
@@ -182,8 +182,8 @@ type WafRuleConfig struct {
 // WafChainedRuleCondition represents a chained condition in a WAF rule.
 type WafChainedRuleCondition struct {
 	VariableTypes map[string]string `json:"variableTypes"`
-	OperatorType  int      `json:"operatorType"`
-	Value         string   `json:"value"`
+	OperatorType  int               `json:"operatorType"`
+	Value         string            `json:"value"`
 }
 
 // CustomWafRuleCreate holds the fields for creating a custom WAF rule.
@@ -203,13 +203,13 @@ type CustomWafRuleUpdate struct {
 
 // WafProfile represents a WAF profile.
 type WafProfile struct {
-	Id              int      `json:"id"`
-	Name            string   `json:"name"`
-	IsPremium       bool     `json:"isPremium"`
-	ProfileCategory string   `json:"profileCategory"`
-	ImageUrl        string   `json:"imageUrl"`
-	Description     string   `json:"description"`
-	Features        string   `json:"features"`
+	Id              int    `json:"id"`
+	Name            string `json:"name"`
+	IsPremium       bool   `json:"isPremium"`
+	ProfileCategory string `json:"profileCategory"`
+	ImageUrl        string `json:"imageUrl"`
+	Description     string `json:"description"`
+	Features        string `json:"features"`
 }
 
 // WafEngineConfig holds WAF engine configuration data.
@@ -252,7 +252,7 @@ type RateLimitRule struct {
 // RateLimitConfig holds the configuration for a rate limit rule.
 type RateLimitConfig struct {
 	ActionType            int                       `json:"actionType"`
-	VariableTypes         map[string]string          `json:"variableTypes"`
+	VariableTypes         map[string]string         `json:"variableTypes"`
 	OperatorType          int                       `json:"operatorType"`
 	SeverityType          int                       `json:"severityType"`
 	TransformationTypes   []int                     `json:"transformationTypes"`
@@ -357,11 +357,11 @@ type AccessListConfigUpdate struct {
 // BotDetectionConfig represents bot detection configuration state for a shield zone.
 // Maps to BotDetectionConfigurationState in the API spec.
 type BotDetectionConfig struct {
-	ShieldZoneId       int64                          `json:"shieldZoneId"`
-	ExecutionMode      int                            `json:"executionMode"`
-	RequestIntegrity   BotDetectionSensitivityConfig  `json:"requestIntegrity"`
-	IpAddress          BotDetectionSensitivityConfig  `json:"ipAddress"`
-	BrowserFingerprint BrowserFingerprintConfig       `json:"browserFingerprint"`
+	ShieldZoneId       int64                         `json:"shieldZoneId"`
+	ExecutionMode      int                           `json:"executionMode"`
+	RequestIntegrity   BotDetectionSensitivityConfig `json:"requestIntegrity"`
+	IpAddress          BotDetectionSensitivityConfig `json:"ipAddress"`
+	BrowserFingerprint BrowserFingerprintConfig      `json:"browserFingerprint"`
 }
 
 // BotDetectionUpdate holds the fields for updating bot detection configuration.
