@@ -130,3 +130,31 @@ func (c *Client) Put(ctx context.Context, path string, body, result any) error {
 func (c *Client) Delete(ctx context.Context, path string) error {
 	return c.Do(ctx, http.MethodDelete, path, nil, nil)
 }
+
+// DoRaw executes an HTTP request with an optional raw body and returns raw
+// response bytes. Unlike Do, it does not JSON-marshal the request or
+// JSON-unmarshal the response. Used for binary operations like DNS zone
+// import/export.
+func (c *Client) DoRaw(ctx context.Context, method, path, contentType string, body io.Reader) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, method, c.baseURL+path, body)
+	if err != nil {
+		return nil, fmt.Errorf("creating request: %w", err)
+	}
+
+	req.Header.Set("AccessKey", c.apiKey)
+	if contentType != "" {
+		req.Header.Set("Content-Type", contentType)
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode >= 400 {
+		return nil, parseErrorResponse(resp)
+	}
+
+	return io.ReadAll(resp.Body)
+}

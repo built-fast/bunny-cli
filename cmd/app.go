@@ -18,6 +18,7 @@ type App struct {
 	NewPullZoneAPI    func(cmd *cobra.Command) (PullZoneAPI, error)
 	NewStorageZoneAPI func(cmd *cobra.Command) (StorageZoneAPI, error)
 	NewStorageAPI     func(cmd *cobra.Command, password, hostname string) (StorageAPI, error)
+	NewDnsZoneAPI     func(cmd *cobra.Command) (DnsZoneAPI, error)
 }
 
 // NewAppContext returns a new context that carries the given App.
@@ -64,5 +65,8 @@ func DefaultApp() *App {
 				IsJSON:   func() bool { return isJSONFormat(cfg.Format) },
 			})
 		},
+		NewDnsZoneAPI: newAPIFactory(func(c client.ClientConfig) (DnsZoneAPI, error) {
+			return client.NewClient(c)
+		}),
 	}
 }
