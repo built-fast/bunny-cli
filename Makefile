@@ -105,10 +105,46 @@ check-surface:
 check-skill-drift:
 	@./scripts/check-skill-drift.sh
 
+# ── Security ──────────────────────────────────────────────────────
+.PHONY: vuln secrets security
+
+vuln:
+	govulncheck ./...
+
+secrets:
+	gitleaks detect --source . --verbose
+
+security: vuln secrets
+
 # ── CI Gate ───────────────────────────────────────────────────────
 .PHONY: check
 
-check: fmt-check vet lint tidy-check check-surface check-skill-drift test
+check: fmt-check vet lint tidy-check check-surface check-skill-drift test test-e2e vuln
+
+# ── Module ────────────────────────────────────────────────────────
+.PHONY: verify
+
+verify:
+	$(GOMOD) verify
+
+# ── GitHub Actions ────────────────────────────────────────────────
+.PHONY: lint-actions
+
+lint-actions:
+	actionlint
+	zizmor .github/workflows/
+
+# ── Release ───────────────────────────────────────────────────────
+.PHONY: test-release
+
+test-release:
+	goreleaser release --snapshot --clean
+
+# ── Tools ─────────────────────────────────────────────────────────
+.PHONY: tools
+
+tools:
+	brew bundle
 
 # ── Help ──────────────────────────────────────────────────────────
 .PHONY: help
@@ -117,30 +153,42 @@ help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Build:"
-	@echo "  build          Build binary to $(BUILD_DIR)/$(BINARY)"
-	@echo "  install        Install binary via go install"
-	@echo "  run            Build and run"
-	@echo "  clean          Remove build artifacts and coverage files"
+	@echo "  build              Build binary to $(BUILD_DIR)/$(BINARY)"
+	@echo "  install            Install binary via go install"
+	@echo "  run                Build and run"
+	@echo "  clean              Remove build artifacts and coverage files"
 	@echo ""
 	@echo "Format & Lint:"
-	@echo "  fmt            Format Go source files"
-	@echo "  fmt-check      Check formatting (fails if not formatted)"
-	@echo "  vet            Run go vet"
-	@echo "  lint           Run golangci-lint"
-	@echo "  tidy           Run go mod tidy"
-	@echo "  tidy-check     Check that go.mod/go.sum are tidy"
+	@echo "  fmt                Format Go source files"
+	@echo "  fmt-check          Check formatting (fails if not formatted)"
+	@echo "  vet                Run go vet"
+	@echo "  lint               Run golangci-lint"
+	@echo "  tidy               Run go mod tidy"
+	@echo "  tidy-check         Check that go.mod/go.sum are tidy"
 	@echo ""
 	@echo "Test:"
-	@echo "  test           Run unit tests"
-	@echo "  test-race      Run unit tests with race detector"
-	@echo "  test-e2e       Run e2e tests (requires Prism)"
-	@echo "  test-coverage  Generate coverage report"
-	@echo "  coverage       Generate and open coverage report"
+	@echo "  test               Run unit tests"
+	@echo "  test-race          Run unit tests with race detector"
+	@echo "  test-e2e           Run e2e tests (BATS + Prism)"
+	@echo "  test-coverage      Generate coverage report"
+	@echo "  coverage           Generate and open coverage report"
 	@echo ""
-	@echo "Surface & Skill Drift:"
-	@echo "  surface        Regenerate .surface snapshot"
-	@echo "  check-surface  Verify .surface is up to date"
-	@echo "  check-skill-drift  Verify SKILL.md matches CLI surface"
+	@echo "Security:"
+	@echo "  vuln               Run govulncheck"
+	@echo "  secrets            Run gitleaks secret scanning"
+	@echo "  security           Run all security checks"
+	@echo ""
+	@echo "Surface & Skills:"
+	@echo "  surface            Regenerate .surface snapshot"
+	@echo "  check-surface      Verify .surface is up to date"
+	@echo "  check-skill-drift  Check SKILL.md matches .surface"
 	@echo ""
 	@echo "CI:"
-	@echo "  check          Run full CI gate"
+	@echo "  check              Run full CI gate"
+	@echo ""
+	@echo "Other:"
+	@echo "  verify             Verify module dependencies"
+	@echo "  lint-actions       Lint GitHub Actions workflows"
+	@echo "  test-release       Goreleaser dry-run"
+	@echo "  tools              Install dev tools via Brewfile"
+	@echo "  help               Show this help"
