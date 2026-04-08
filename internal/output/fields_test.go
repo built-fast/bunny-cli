@@ -1,0 +1,231 @@
+package output
+
+import (
+	"encoding/json"
+	"strings"
+	"testing"
+
+	"github.com/itchyny/gojq"
+)
+
+func TestNormalizeFieldName(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"Code", "code"},
+		{"code", "code"},
+		{"CODE", "code"},
+		{"First Name", "first_name"},
+		{"first_name", "first_name"},
+		{"first-name", "first_name"},
+		{"Created At", "created_at"},
+		{" Email ", "email"},
+	}
+	for _, tt := range tests {
+		got := normalizeFieldName(tt.input)
+		if got != tt.want {
+			t.Errorf("normalizeFieldName(%q) = %q, want %q", tt.input, got, tt.want)
+		}
+	}
+}
+
+func TestValidateFields_AllValid(t *testing.T) {
+	t.Parallel()
+	err := ValidateFields(testColumns, []string{"Name", "Email"})
+	if err != nil {
+		t.Errorf("expected no error, got: %v", err)
+	}
+}
+
+func TestValidateFields_CaseInsensitive(t *testing.T) {
+	t.Parallel()
+	err := ValidateFields(testColumns, []string{"name", "EMAIL"})
+	if err != nil {
+		t.Errorf("expected no error for case-insensitive match, got: %v", err)
+	}
+}
+
+func TestValidateFields_Invalid(t *testing.T) {
+	t.Parallel()
+	err := ValidateFields(testColumns, []string{"Name", "bogus"})
+	if err == nil {
+		t.Fatal("expected error for invalid field")
+	}
+	if !strings.Contains(err.Error(), "bogus") {
+		t.Errorf("error should mention invalid field name, got: %v", err)
+	}
+	if !strings.Contains(err.Error(), "available fields") {
+		t.Errorf("error should list available fields, got: %v", err)
+	}
+	if !strings.Contains(err.Error(), "Name") || !strings.Contains(err.Error(), "Email") {
+		t.Errorf("error should list available field names, got: %v", err)
+	}
+}
+
+func TestSelectColumns_OrderMatchesFieldOrder(t *testing.T) {
+	t.Parallel()
+	cols := SelectColumns(testColumns, []string{"Email", "Name"})
+	if len(cols) != 2 {
+		t.Fatalf("expected 2 columns, got %d", len(cols))
+	}
+	if cols[0].Header != "Email" {
+		t.Errorf("expected first column to be Email, got %s", cols[0].Header)
+	}
+	if cols[1].Header != "Name" {
+		t.Errorf("expected second column to be Name, got %s", cols[1].Header)
+	}
+}
+
+func TestSelectColumns_CaseInsensitive(t *testing.T) {
+	t.Parallel()
+	cols := SelectColumns(testColumns, []string{"email"})
+	if len(cols) != 1 {
+		t.Fatalf("expected 1 column, got %d", len(cols))
+	}
+	if cols[0].Header != "Email" {
+		t.Errorf("expected Email column, got %s", cols[0].Header)
+	}
+}
+
+func TestFieldSelection_ListTable(t *testing.T) {
+	t.Parallel()
+	items := []any{
+		testItem{Name: "Alice", Email: "alice@example.com"},
+		testItem{Name: "Bob", Email: "bob@example.com"},
+	}
+
+	out, err := FormatList(&Config{Format: "table", Fields: []string{"Name"}}, testColumns, items, false)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(out, "Name") {
+		t.Error("table should contain header 'Name'")
+	}
+	if !strings.Contains(out, "Alice") {
+		t.Error("table should contain data 'Alice'")
+	}
+	if strings.Contains(out, "Email") {
+		t.Error("table should NOT contain header 'Email' when not selected")
+	}
+	if strings.Contains(out, "alice@example.com") {
+		t.Error("table should NOT contain email data when not selected")
+	}
+}
+
+func TestFieldSelection_ListJSON(t *testing.T) {
+	t.Parallel()
+	items := []any{
+		testItem{Name: "Alice", Email: "alice@example.com"},
+	}
+
+	out, err := FormatList(&Config{Format: "json", Fields: []string{"Name"}}, testColumns, items, false)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var envelope struct {
+		Data []map[string]any `json:"data"`
+	}
+	if err := json.Unmarshal([]byte(out), &envelope); err != nil {
+		t.Fatalf("invalid JSON: %v", err)
+	}
+	if len(envelope.Data) != 1 {
+		t.Fatalf("expected 1 item, got %d", len(envelope.Data))
+	}
+	item := envelope.Data[0]
+	if _, ok := item["name"]; !ok {
+		t.Error("JSON should include 'name' field")
+	}
+	if _, ok := item["email"]; ok {
+		t.Error("JSON should NOT include 'email' field when not selected")
+	}
+}
+
+func TestFieldSelection_OneTable(t *testing.T) {
+	t.Parallel()
+	item := testItem{Name: "Alice", Email: "alice@example.com"}
+
+	out, err := FormatOne(&Config{Format: "table", Fields: []string{"Email"}}, testColumns, item)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(out, "Email") {
+		t.Error("table should contain 'Email' row")
+	}
+	if !strings.Contains(out, "alice@example.com") {
+		t.Error("table should contain email value")
+	}
+	lines := strings.Split(out, "\n")
+	for _, line := range lines {
+		if strings.Contains(line, "Name") && !strings.Contains(line, "Field") {
+			t.Error("table should NOT contain 'Name' row when not selected")
+		}
+	}
+}
+
+func TestFieldSelection_OneJSON(t *testing.T) {
+	t.Parallel()
+	item := testItem{Name: "Alice", Email: "alice@example.com"}
+
+	out, err := FormatOne(&Config{Format: "json", Fields: []string{"Email"}}, testColumns, item)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var decoded map[string]any
+	if err := json.Unmarshal([]byte(out), &decoded); err != nil {
+		t.Fatalf("invalid JSON: %v", err)
+	}
+	if _, ok := decoded["email"]; !ok {
+		t.Error("JSON should include 'email'")
+	}
+	if _, ok := decoded["name"]; ok {
+		t.Error("JSON should NOT include 'name' when not selected")
+	}
+}
+
+func TestFieldSelection_InvalidField_ReturnsError(t *testing.T) {
+	t.Parallel()
+	items := []any{testItem{Name: "Alice", Email: "alice@example.com"}}
+
+	_, err := FormatList(&Config{Format: "table", Fields: []string{"bogus"}}, testColumns, items, false)
+	if err == nil {
+		t.Fatal("expected error for invalid field")
+	}
+	if !strings.Contains(err.Error(), "bogus") {
+		t.Errorf("error should mention 'bogus', got: %v", err)
+	}
+}
+
+func TestFieldSelection_WithJQ(t *testing.T) {
+	t.Parallel()
+	query, err := gojq.Parse(".data[].name")
+	if err != nil {
+		t.Fatalf("parse jq: %v", err)
+	}
+	code, err := gojq.Compile(query)
+	if err != nil {
+		t.Fatalf("compile jq: %v", err)
+	}
+
+	items := []any{
+		testItem{Name: "Alice", Email: "alice@example.com"},
+		testItem{Name: "Bob", Email: "bob@example.com"},
+	}
+
+	out, fmtErr := FormatList(&Config{Format: "json", Fields: []string{"Name"}, JQ: code}, testColumns, items, false)
+	if fmtErr != nil {
+		t.Fatalf("unexpected error: %v", fmtErr)
+	}
+
+	if !strings.Contains(out, "Alice") {
+		t.Error("output should contain 'Alice'")
+	}
+	if !strings.Contains(out, "Bob") {
+		t.Error("output should contain 'Bob'")
+	}
+}
