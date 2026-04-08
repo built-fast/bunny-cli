@@ -126,6 +126,11 @@ func (c *Client) Put(ctx context.Context, path string, body, result any) error {
 	return c.Do(ctx, http.MethodPut, path, body, result)
 }
 
+// Patch is a convenience wrapper for Do with PATCH method.
+func (c *Client) Patch(ctx context.Context, path string, body, result any) error {
+	return c.Do(ctx, http.MethodPatch, path, body, result)
+}
+
 // Delete is a convenience wrapper for Do with DELETE method.
 func (c *Client) Delete(ctx context.Context, path string) error {
 	return c.Do(ctx, http.MethodDelete, path, nil, nil)

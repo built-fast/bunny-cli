@@ -40,13 +40,23 @@ if [ ! -f "$PRISM_COMPUTE_SPEC" ]; then
   exit 1
 fi
 
-# --- Select a second random port for compute API ---
+PRISM_SHIELD_SPEC="$PROJECT_ROOT/openapi/shield-api.json"
+if [ ! -f "$PRISM_SHIELD_SPEC" ]; then
+  echo "ERROR: OpenAPI spec not found at $PRISM_SHIELD_SPEC" >&2
+  exit 1
+fi
+
+# --- Select random ports for additional API mocks ---
 PRISM_COMPUTE_PORT=$(get_random_port)
 PRISM_COMPUTE_URL="http://127.0.0.1:${PRISM_COMPUTE_PORT}"
+
+PRISM_SHIELD_PORT=$(get_random_port)
+PRISM_SHIELD_URL="http://127.0.0.1:${PRISM_SHIELD_PORT}"
 
 # --- Cleanup trap ---
 PRISM_PID=""
 PRISM_COMPUTE_PID=""
+PRISM_SHIELD_PID=""
 cleanup() {
   if [ -n "$PRISM_PID" ]; then
     kill "$PRISM_PID" 2>/dev/null || true
@@ -55,6 +65,10 @@ cleanup() {
   if [ -n "$PRISM_COMPUTE_PID" ]; then
     kill "$PRISM_COMPUTE_PID" 2>/dev/null || true
     wait "$PRISM_COMPUTE_PID" 2>/dev/null || true
+  fi
+  if [ -n "$PRISM_SHIELD_PID" ]; then
+    kill "$PRISM_SHIELD_PID" 2>/dev/null || true
+    wait "$PRISM_SHIELD_PID" 2>/dev/null || true
   fi
 }
 trap cleanup EXIT INT TERM
@@ -73,6 +87,13 @@ npx @stoplight/prism-cli mock "$PRISM_COMPUTE_SPEC" \
   --host 127.0.0.1 \
   > /dev/null 2>&1 &
 PRISM_COMPUTE_PID=$!
+
+echo "==> Starting Prism mock server (shield) on port ${PRISM_SHIELD_PORT}..."
+npx @stoplight/prism-cli mock "$PRISM_SHIELD_SPEC" \
+  --port "$PRISM_SHIELD_PORT" \
+  --host 127.0.0.1 \
+  > /dev/null 2>&1 &
+PRISM_SHIELD_PID=$!
 
 # --- Wait for Prism to be ready ---
 wait_for_prism() {
@@ -95,11 +116,13 @@ wait_for_prism() {
 
 wait_for_prism "$PRISM_URL" "platform"
 wait_for_prism "$PRISM_COMPUTE_URL" "compute"
+wait_for_prism "$PRISM_SHIELD_URL" "shield"
 
 # --- Run BATS tests ---
 echo "==> Running e2e tests..."
 export PRISM_URL
 export PRISM_COMPUTE_URL
+export PRISM_SHIELD_URL
 export BUNNY_BINARY
 
 bats e2e/*.bats

@@ -23,6 +23,7 @@ type App struct {
 	NewVideoLibraryAPI func(cmd *cobra.Command) (VideoLibraryAPI, error)
 	NewStreamAPI       func(cmd *cobra.Command) (StreamAPI, error)
 	NewEdgeScriptAPI   func(cmd *cobra.Command) (EdgeScriptAPI, error)
+	NewShieldAPI       func(cmd *cobra.Command) (ShieldAPI, error)
 }
 
 // NewAppContext returns a new context that carries the given App.
@@ -96,6 +97,9 @@ func DefaultApp() *App {
 			return client.NewClient(c)
 		}),
 		NewEdgeScriptAPI: newAPIFactory(func(c client.ClientConfig) (EdgeScriptAPI, error) {
+			return client.NewClient(c)
+		}),
+		NewShieldAPI: newAPIFactory(func(c client.ClientConfig) (ShieldAPI, error) {
 			return client.NewClient(c)
 		}),
 	}
